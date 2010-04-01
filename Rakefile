@@ -6,7 +6,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "rchart"
     gem.summary = %Q{Ruby port of the slick pChart charting library}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.description = %Q{Ruby port of the slick pChart charting library}
     gem.email = "mail@nilesh.org"
     gem.homepage = "http://github.com/nilesh/rchart"
     gem.authors = ["Nilesh Chaudhari"]
