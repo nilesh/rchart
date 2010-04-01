@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/nilesh/rchart}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
+  s.add_dependency('sandofsky-gd2', '>= 1.1.2')
   s.rubygems_version = %q{1.3.6}
   s.summary = %q{Ruby port of the slick pChart charting library}
   s.test_files = [
