@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Nilesh Chaudhari", "Amar Daxini"]
+  s.authors = ["Nilesh Chaudhari"]
   s.date = %q{2010-04-01}
   s.description = %q{Ruby port of the slick pChart charting library}
   s.email = %q{mail@nilesh.org}
@@ -36,7 +36,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/nilesh/rchart}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Ruby port of the slick pChart charting library}
   s.test_files = [
     "test/helper.rb",
