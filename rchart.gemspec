@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "fonts/pf_arma_five.ttf",
      "fonts/tahoma.ttf",
      "lib/rchart.rb",
+     "rchart.gemspec",
      "test/helper.rb",
      "test/test_rchart.rb"
   ]
