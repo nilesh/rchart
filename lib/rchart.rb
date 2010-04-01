@@ -1,4 +1,4 @@
-require 'ruby-gd'
+require 'sandofsky-gd2'
 
 class RChart
   
@@ -46,15 +46,15 @@ class RChart
     @shadow_blur = 0
     @tmp_dir = '/tmp'
     
-    # $this->Picture = imagecreatetruecolor($XSize,$YSize);
-    # 
-    #  $C_White =$this->AllocateColor($this->Picture,255,255,255);
-    #  imagefilledrectangle($this->Picture,0,0,$XSize,$YSize,$C_White);
-    #  imagecolortransparent($this->Picture,$C_White);
-    # 
-    #  $this->setFontProperties("tahoma.ttf",8);
-    
-    
+    @picture = GD2::Image::TrueColor.new(@x_size, @y_size)
+    @c_white = GD2::Color.new(255, 255, 255)
+    point1 = GD2::Canvas::Point.new(0,0)
+    point2 = GD2::Canvas::Point.new(@x_size, @y_size)
+    rectangle = GD2::Canvas::FilledRectangle.new(point1, point2)
+    rectangle.draw(@picture, @c_white.rgba)
+    @picture.transparent = @c_white
+    self.set_font_properties("tahoma.ttf", 8)
+
   end
   
   def draw_background(r, g, b)
@@ -83,6 +83,10 @@ class RChart
   
   def draw_filled_circle(xc, yc, height, r, g, b, width)
     
+  end
+  
+  def set_font_properties(fontname, fontsize)
+    @default_font = GD2::Font::TrueType.new(fontname, fontsize)
   end  
   
 end

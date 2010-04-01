@@ -9,7 +9,7 @@ begin
     gem.description = %Q{Ruby port of the slick pChart charting library}
     gem.email = "mail@nilesh.org"
     gem.homepage = "http://github.com/nilesh/rchart"
-    gem.authors = ["Nilesh Chaudhari"]
+    gem.authors = ["Nilesh Chaudhari", "Amar Daxini"]
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
