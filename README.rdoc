@@ -1,6 +1,6 @@
 = rchart
 
-Description goes here.
+Ruby port of the slick pChart charting library -- http://pchart.sourceforge.net/
 
 == Note on Patches/Pull Requests
  
@@ -14,4 +14,4 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 Nilesh Chaudhari. See LICENSE for details.
+Copyright (c) 2010 Nilesh Chaudhari & Amar Daxini. See LICENSE for details.
