@@ -123,12 +123,12 @@ class RChart
   end
   #TODO check
   def image_ttf_text(picture,font_size,angle,xpos,ypos,fgcolor,font_name,value)
-     font = GD2::Font::TrueType[fontname, fontsize]
-     font.draw(picture, xpos, ypos, angle, value, fgc olor) 
+     #font = GD2::Font::TrueType[fontname, fontsize]
+     #font.draw(picture, xpos, ypos, angle, value, fgc color) 
   end
   def image_ftb_box(font_size,angle,font_name,value)
-    font = GD2::Font::TrueType.new(fontname, fontsize)
-    font = bounding_rectangle(value, angle)
+    #font = GD2::Font::TrueType.new(fontname, fontsize)
+    #font = bounding_rectangle(value, angle)
   end
 
 
@@ -699,85 +699,115 @@ class RChart
       xmin = nil
       i =1
       while(i<=divisions+1)
-    if (right_scale )
-      self.draw_line(@garea_x2,ypos,@garea_x2+5,ypos,r,g,b)
-    else
-      self.draw_line(@garea_x1,ypos,@garea_x1-5,ypos,r,g,b)
-    end
-    value     = @vmin + (i-1) * (( @vmax - @vmin ) / divisions)
-    value     = (value * (10**decimals)).round / (10**decimals)
-    value = value.data_description["unit"]["y"]  if ( data_description["format"]["y"] == "number" )
-    value = self.to_time(value)                  if ( data_description["format"]["y"] == "time" )
-    value = self.to_date(value)                  if ( data_description["format"]["y"] == "date" )
-    value = self.to_metric(value)                if ( data_description["format"]["Y"] == "metric" )
-    value = self.to_currency(value)             if ( data_description["format"]["Y"] == "currency" )
-    position  = image_ftb_box(@font_size,0,@font_name,value)
-    text_width =position[2]-position[0]
-    if ( right_scale )
-      image_ttf_text(@picture,@font_size,0,@garea_x2+10,ypos+(@font_size/2),c_text_color,@font_name,value)
-      xmin = @garea_x2+15+text_width if ( xmin < @garea_x2+15+text_width || xmin.nil? )
-    else
-      image_ttf_text(@picture,@font_size,0,@garea_x1-10-text_width,ypos+(@font_size/2),c_text_color,@font_name,value)
-     xmin = @garea_x1-10-text_width if ( xmin > @garea_x1-10-text_width || xmin.nil? )
-    end
-    ypos = ypos - @division_height
-    i = i+1
-  end
-  
-# Write the Y Axis caption if set */
-if ( !data_description["axis"]["y"].nil? )
-  position   = image_ftb_box(@font_size,90,@font_name,data_description["axis"]["y"])
-  text_height = (position[1]).abs+(position[3]).abs
-  text_top    = ((@garea_y2 - @garea_y1) / 2) + @garea_y1 + (text_height/2)
-  if ( right_scale )
-    image_ttf_text(@picture,@font_size,90,xmin+@font_size,text_top,c_text_color,@font_name,data_description["axis"]["y"])
-  else
-    image_ttf_text(@picture,@font_size,90,xmin-@font_size,text_top,c_text_color,@font_name,data_description["axis"]["y"])
-  end
-# Horizontal Axis */
-  xpos = @garea_x1 + @g_area_x_offset
-  id = 1
-  ymax = nil
-  data.each do |key|
-    if ( id % skip_labels == 0 )
-      self.draw_line((xpos).floor,@garea_y2,(xpos).floor,@garea_y2+5,r,g,b)
-      value      =data[key][data_description["position"]]
-      value = value.data_description["unit"]["x"] if ( data_description["format"]["x"] == "number" )
-      value = self.to_time(value)       if ( data_description["format"]["x"] == "time" )
-      value = self.to_date(value)       if ( data_description["format"]["x"] == "date" )
-      value = self.to_metric(value)     if ( data_description["format"]["x"] == "metric" )
-      value = self.to_currency(value)   if ( data_description["format"]["x"] == "currency" )
-      position   = image_ftb_box(@font_size,angle,@font_name,value)
-      text_width  = (position[2]).abs+abs(position[0]).abs
-      text_height = (position[1]).abs+(position[3]).abs
-      if ( angle == 0 )
-        ypos = @garea_y2+18
-        image_ttf_text(@picture,@font_size,angle,floor(xpos)-floor(text_width/2),ypos,c_text_color,@font_name,value)
-      else
-        ypos = @garea_y2+10+$TextHeight
-        if ( angle <= 90 )
-          image_ttf_text(@picture,@font_size,angle,floor(xpos)-text_width+5,ypos,c_text_color,@font_name,value)
+        if (right_scale )
+          self.draw_line(@garea_x2,ypos,@garea_x2+5,ypos,r,g,b)
         else
-          image_ttf_text(@picture,@font_size,angle,floor(xpos)+text_width+5,ypos,c_text_color,@font_name,value)
+          self.draw_line(@garea_x1,ypos,@garea_x1-5,ypos,r,g,b)
         end
+        value     = @vmin + (i-1) * (( @vmax - @vmin ) / divisions)
+        value     = (value * (10**decimals)).round / (10**decimals)
+        value = value.data_description["unit"]["y"]  if ( data_description["format"]["y"] == "number" )
+        value = self.to_time(value)                  if ( data_description["format"]["y"] == "time" )
+        value = self.to_date(value)                  if ( data_description["format"]["y"] == "date" )
+        value = self.to_metric(value)                if ( data_description["format"]["Y"] == "metric" )
+        value = self.to_currency(value)             if ( data_description["format"]["Y"] == "currency" )
+        position  = image_ftb_box(@font_size,0,@font_name,value)
+        text_width =position[2]-position[0]
+        if ( right_scale )
+          image_ttf_text(@picture,@font_size,0,@garea_x2+10,ypos+(@font_size/2),c_text_color,@font_name,value)
+          xmin = @garea_x2+15+text_width if ( xmin < @garea_x2+15+text_width || xmin.nil? )
+        else
+          image_ttf_text(@picture,@font_size,0,@garea_x1-10-text_width,ypos+(@font_size/2),c_text_color,@font_name,value)
+          xmin = @garea_x1-10-text_width if ( xmin > @garea_x1-10-text_width || xmin.nil? )
+        end
+        ypos = ypos - @division_height
+        i = i+1
+      end
+      # Write the Y Axis caption if set */
+    if ( !data_description["axis"]["y"].nil? )
+      position   = image_ftb_box(@font_size,90,@font_name,data_description["axis"]["y"])
+      text_height = (position[1]).abs+(position[3]).abs
+      text_top    = ((@garea_y2 - @garea_y1) / 2) + @garea_y1 + (text_height/2)
+      if ( right_scale )
+        image_ttf_text(@picture,@font_size,90,xmin+@font_size,text_top,c_text_color,@font_name,data_description["axis"]["y"])
+      else
+        image_ttf_text(@picture,@font_size,90,xmin-@font_size,text_top,c_text_color,@font_name,data_description["axis"]["y"])
+      end
+    end  
+      # Horizontal Axis */
+      xpos = @garea_x1 + @g_area_x_offset
+      id = 1
+      ymax = nil
+      data.each do |key|
+        if ( id % skip_labels == 0 )
+          self.draw_line((xpos).floor,@garea_y2,(xpos).floor,@garea_y2+5,r,g,b)
+          value      =data[key][data_description["position"]]
+          value = value.data_description["unit"]["x"] if ( data_description["format"]["x"] == "number" )
+          value = self.to_time(value)       if ( data_description["format"]["x"] == "time" )
+          value = self.to_date(value)       if ( data_description["format"]["x"] == "date" )
+          value = self.to_metric(value)     if ( data_description["format"]["x"] == "metric" )
+          value = self.to_currency(value)   if ( data_description["format"]["x"] == "currency" )
+          position   = image_ftb_box(@font_size,angle,@font_name,value)
+          text_width  = (position[2]).abs+abs(position[0]).abs
+          text_height = (position[1]).abs+(position[3]).abs
+          if ( angle == 0 )
+            ypos = @garea_y2+18
+            image_ttf_text(@picture,@font_size,angle,(xpos).floor-(text_width/2).floor,ypos,c_text_color,@font_name,value)
+          else
+             ypos = @garea_y2+10+$TextHeight
+              if ( angle <= 90 )
+                image_ttf_text(@picture,@font_size,angle,(xpos).floor-text_width+5,ypos,c_text_color,@font_name,value)
+              else
+                image_ttf_text(@picture,@font_size,angle,(xpos).floor+text_width+5,ypos,c_text_color,@font_name,value)
+              end  
+           end
         ymax = ypos if (ymax < ypos || ymax.nil? )
       end
       xpos = xpos + @division_width
       id = id+1
-    end   
-  end 
-
-  #Write the X Axis caption if set */
-  if ( !(data_description["axis"]["x"]).nil? )
-    position   = image_ftb_box(@font_size,90,@font_name,data_description["axis"]["x"])
-    text_width  = (position[2]).abs+(position[0]).abs
-    text_left   = ((@garea_x2 - @garea_x1) / 2) + @garea_x1 + (text_width/2)
-    image_ttf_text(@picture,@font_size,0,text_left,ymax+@font_size+5,c_text_color,@font_name,data_description["axis"]["x"])
+    end   #loop ended
+    #Write the X Axis caption if set */
+    if ( !(data_description["axis"]["x"]).nil? )
+      position   = image_ftb_box(@font_size,90,@font_name,data_description["axis"]["x"])
+      text_width  = (position[2]).abs+(position[0]).abs
+      text_left   = ((@garea_x2 - @garea_x1) / 2) + @garea_x1 + (text_width/2)
+      image_ttf_text(@picture,@font_size,0,text_left,ymax+@font_size+5,c_text_color,@font_name,data_description["axis"]["x"])
+    end
   end
-end
+  #Compute and draw the scale 
+   def draw_treshold(value,r,g,b,show_label=false,show_on_right=false,tick_width=4,free_text=nil)
+      r = 0    if ( r < 0 )
+      r = 255  if ( r > 255 )
+      g = 0    if ( g < 0 )
+      g = 255  if ( g > 255 )
+      b = 0    if ( b < 0 )
+      b = 255  if ( b > 255 )
+
+     c_text_color =allocate_color(r,g,b)
+     y = @g_area_y2 - (value - @vmin) * @division_ratio
+
+     return(-1) if ( y <= @g_area_y1 || y >= @g_area_y2 )
+      if ( tick_width == 0 )
+        self.draw_Line(@g_area_x1,y,@g_area_x2,y,r,g,b)  
+      else
+       self.draw_dotted_line(@g_area_x1,y,@g_area_x2,y,tick_width,r,g,b);
+      end
+     if (show_label )
+        if ( free_text.nil? )
+          label = value
+        else  
+          label = free_text
+        end
+        
+        if ( show_on_right )
+          image_ttf_text(@picture,@font_size,0,@g_area_x2+2,y+(@font_size/2),c_text_color,@font_name,label)
+        else
+          image_ttf_text(@picture,@font_size,0,@g_area_x1+2,y-(@font_size/2),c_text_color,@font_name,label)
+        end 
+     end
+   end
 end
 
-end
 ch = RChart.new(700,230)
 ch.set_graph_area(70,30,680,200)
 ch.draw_filled_rounded_rectangle(7,7,693,223,5,240,240,240)
