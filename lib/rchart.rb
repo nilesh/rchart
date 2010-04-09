@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'ruby-debug'
 require 'gd2'
-require 'RData'
+require 'rdata'
 
 class RChart
   SCALE_NORMAL = 1
@@ -58,6 +58,7 @@ class RChart
                         {"r"=>224,"g"=>176,"b"=>46}]
     @picture = GD2::Image::TrueColor.new(@x_size, @y_size)
     @c_white = GD2::Color.new(255, 255, 255)
+    @font = GD2::Font::TrueType.new("/home/amar/projects/gem/rchart/fonts/tahoma.ttf", @font_size)
     point1 = GD2::Canvas::Point.new(0,0)
     point2 = GD2::Canvas::Point.new(@x_size, @y_size)
     rectangle = GD2::Canvas::FilledRectangle.new(point1, point2)
@@ -111,7 +112,7 @@ class RChart
    end
 
    def image_copy_merge(src_pic,other, dst_x, dst_y, src_x, src_y, w, h, pct, gray = false)
-  # debugger
+
      src_pic.merge_from(other, dst_x, dst_y, src_x, src_y, w, h, pct)
    end
 
@@ -125,28 +126,47 @@ class RChart
     color = GD2::Color.new(r, g, b)
     picture.set_pixel(x,y,color.rgba)
    end
-
-  def image_line(picture,x1,y1,x2,y2,line_color)
-   point1 = GD2::Canvas::Point.new(x1,y1)
-   point2 = GD2::Canvas::Point.new(x2, y2+1)
-   line = GD2::Canvas::Line.new(point1,point2)
-   line.draw(picture,line_color.rgba)
+   
+   def image_color_allocate(picture,r,g,b)
+     color = GD2::Color.new(r, g, b)
+     x1,y1 =picture.size[0],picture.size[1]
+     point1 = GD2::Canvas::Point.new(0,0)
+     point2 = GD2::Canvas::Point.new(x1, y1)
+     rectangle = GD2::Canvas::FilledRectangle.new(point1, point2)
+     rectangle.draw(picture, color.rgba)
   end
+
+  def image_line(picture,x1,y1,x2,y2,r,g,b)
+    point1 = GD2::Canvas::Point.new(x1,y1)
+    point2 = GD2::Canvas::Point.new(x2, y2+1)
+    line = GD2::Canvas::Line.new(point1,point2)
+    line_color =GD2::Color.new(r,g,b)
+    line.draw(picture,line_color.rgba)
+  end
+  
   def image_create_true_color(width,height)
      GD2::Image::TrueColor.new(width,height)
   end
+  
   #TODO check
   def image_ttf_text(picture,font_size,angle,xpos,ypos,fgcolor,font_name,value)
      font = GD2::Font::TrueType.new("/home/amar/projects/gem/rchart/fonts/tahoma.ttf", font_size)
-     font.draw(@picture, xpos, ypos, angle, value, fgcolor.rgba) 
+     p_text = GD2::Canvas::Point.new(xpos,ypos)
+     text = GD2::Canvas::Text.new(font, p_text, 0, value)
+     white = fgcolor
+     text.draw(picture, fgcolor.rgba)
+     #font.draw(@picture, xpos, ypos, angle, value, fgcolor.rgba) 
   end
+  
   def image_ftb_box(font_size,angle,font_name,value)
     font = GD2::Font::TrueType.new("/home/amar/projects/gem/rchart/fonts/tahoma.ttf", font_size)
-    font.bounding_rectangle(value, angle)
+   # debugger
+    @font.bounding_rectangle(value,angle)
   end
-  def  image_color_transparent(im,r,g,b)
-     color = GD2::Color.new(r, g, b)
-     im.transparent=(color)
+  
+  def image_color_transparent(im,r,g,b)
+    color = GD2::Color.new(r, g, b)
+    im.transparent=(color)
   end
 
 
@@ -179,6 +199,7 @@ class RChart
     yi   = y.floor
     if ( xi == x && yi == y)
       if ( alpha == 100 )
+         c_aliased = self.allocate_color(@picture,r,g,b); 
          image_set_pixel(@picture,x,y,r,g,b)
       else
          self.draw_alpha_pixel(x,y,alpha,r,g,b)
@@ -208,7 +229,7 @@ class RChart
       g2 = 0  if g2 < 0
       b2 = r-15
       b2 = 0  if b2 < 0
-      line_color = allocate_color(r2,g2,b2)
+      line_color = allocate_color(@picture,r2,g2,b2)
       skew_width = @g_area_y2-@g_area_y1-1
       
       i = @g_area_x1-skew_width
@@ -226,10 +247,10 @@ class RChart
           y2 = @g_area_y1 + x2 - @g_area_x2 +1
           x2 = @g_area_x2 - 1
         end
-        image_line(@picture,x1,y1,x2,y2+1,line_color)
+        image_line(@picture,x1,y1,x2,y2+1,r2,g2,b2)
         i = i+4
       end
-      #debugger
+
     end
   end
   def draw_background(r, g, b)
@@ -243,7 +264,7 @@ class RChart
     g = 255  if ( g > 255 )
     b = 0    if ( b < 0 )
     b = 255  if ( b > 255 )
-    c_rectangle =  allocate_color(r, g, b)
+    c_rectangle =  allocate_color(@picture,r, g, b)
     x1=x1-0.2
     y1=y1-0.2
     x2=x2+0.2
@@ -310,7 +331,7 @@ class RChart
       b = 0    if ( b < 0)
       b = 255  if ( b > 255)
 
-     c_rectangle = allocate_color(r,g,b)
+     c_rectangle = allocate_color(@picture,r,g,b)
 
      step = 90 / ((3.1418 * radius)/2)
      i=0
@@ -350,7 +371,8 @@ class RChart
     g = 255  if ( g > 255)
     b = 0    if ( b < 0)
     b = 255  if ( b > 255)
-    c_rectangle = allocate_color(r,g,b)
+    c_rectangle = allocate_color(@picture,r,g,b)
+    
     step = 90 / ((3.1418 * radius)/2)
       i=0
       while i<=90
@@ -366,10 +388,10 @@ class RChart
        xi4 = Math.cos((i+90)*3.1418/180) * radius + x1 + radius
        yi4 = Math.sin((i+90)*3.1418/180) * radius + y2 - radius
 
-       image_line(@picture,xi1,yi1,x1+radius,yi1,c_rectangle)
-       image_line(@picture,x2-radius,yi2,xi2,yi2,c_rectangle)
-       image_line(@picture,x2-radius,yi3,xi3,yi3,c_rectangle)
-       image_line(@picture,xi4,yi4,x1+radius,yi4,c_rectangle)
+       image_line(@picture,xi1,yi1,x1+radius,yi1,r,g,b)
+       image_line(@picture,x2-radius,yi2,xi2,yi2,r,g,b)
+       image_line(@picture,x2-radius,yi3,xi3,yi3,r,g,b)
+       image_line(@picture,xi4,yi4,x1+radius,yi4,r,g,b)
 
        self.draw_antialias_pixel(xi1,yi1,r,g,b)
        self.draw_antialias_pixel(xi2,yi2,r,g,b)
@@ -397,8 +419,18 @@ class RChart
   def draw_filled_circle(xc, yc, height, r, g, b, width)
 
   end
-  def allocate_color(r,g,b)
-    GD2::Color.new(r, g, b)
+
+  def allocate_color(picture,r,g,b,factor=0)
+     r = r + factor
+     g = g + factor
+     b = b + factor
+      r = 0    if ( r < 0 )
+      r = 255  if ( r > 255 )
+      g = 0    if ( g < 0 )
+      g = 255  if ( g > 255 )
+      b = 0    if ( b < 0 )
+      b = 255  if ( b > 255 )
+   image_color_allocate(picture,r,g,b)
   end
   #This function create a line with antialias
   def draw_line(x1,y1,x2,y2,r,g,b,graph_function=false)
@@ -438,7 +470,7 @@ class RChart
       end
     end
    end
-  def draw_dotted_line(x1,y1,x2,y2,line_dot_size,r,g,b,graph_function)
+  def draw_dotted_line(x1,y1,x2,y2,line_dot_size,r,g,b,graph_function=false)
 
   end
   # Draw an alpha pixel */
@@ -454,7 +486,7 @@ class RChart
       #TODO check image_color_at method is right?
     else
       rGB2 = image_color_at(@picture, x, y)
-    #  debugger
+
       r2   = (rGB2 >> 16) & 0xFF
       g2   = (rGB2 >> 8) & 0xFF
       b2   = rGB2 & 0xFF
@@ -498,7 +530,7 @@ class RChart
  #Validate data contained in the data array
    def validate_data(function_name,data)
       data_summary = {}
-      #debugger
+
      data.each do |v|
        v.each do |key,val|
          if (data_summary[key].nil?)
@@ -621,7 +653,8 @@ class RChart
    def draw_scale(data,data_description,scale_mode,r,g,b,draw_ticks=true,angle=0,decimals=1,with_margin=false,skip_labels=1,right_scale=false)
      # Validate the Data and DataDescription array
      self.validate_data("draw_scale",data)
-     c_text_color         = allocate_color(r,g,b)
+     #c_text_color         = allocate_color(@picture,r,g,b)
+     c_text_color         = GD2::Color.new(r,g,b)
      self.draw_line(@g_area_x1,@g_area_y1,@g_area_x1,@g_area_y2,r,g,b)
      self.draw_line(@g_area_x1,@g_area_y2,@g_area_x2,@g_area_y2,r,g,b)
      if(@vmin.nil? && @vmax.nil?)
@@ -756,7 +789,7 @@ class RChart
       @data_count = (data).count
       return(0) if (draw_ticks == false )
       ypos = @g_area_y2
-      xmin = nil
+      xmin = 0.0
       i =1
       while(i<=divisions+1)
         if (right_scale )
@@ -786,9 +819,10 @@ class RChart
         i = i+1
       end
       # Write the Y Axis caption if set */
-    if ( !data_description["axis"]["y"].nil? )
+
+    if ( !data_description["axis"].nil?&&!data_description["axis"]["y"].nil? )
       position   = image_ftb_box(@font_size,90,@font_name,data_description["axis"]["y"])
-      text_height = (position[1]).abs+(position[3]).abs
+      text_height = (position[:lower_left][1]).abs+(position[:lower_right][1]).abs
       text_top    = ((@g_area_y2 - @g_area_y1) / 2) + @g_area_y1 + (text_height/2)
       if ( right_scale )
         image_ttf_text(@picture,@font_size,90,xmin+@font_size,text_top,c_text_color,@font_name,data_description["axis"]["y"])
@@ -809,31 +843,31 @@ class RChart
           value = self.to_date(value)       if ( data_description["format"]["x"] == "date" )
           value = self.to_metric(value)     if ( data_description["format"]["x"] == "metric" )
           value = self.to_currency(value)   if ( data_description["format"]["x"] == "currency" )
-          position   = image_ftb_box(@font_size,angle,@font_name,value)
-          text_width  = (position[2]).abs+abs(position[0]).abs
-          text_height = (position[1]).abs+(position[3]).abs
+          position   = image_ftb_box(@font_size,angle,@font_name,value.to_s)
+          text_width  = (position[:lower_right][0]).abs+(position[:lower_left][0]).abs
+          text_height = (position[:lower_left][1]).abs+(position[:lower_right][1]).abs
           if ( angle == 0 )
             ypos = @g_area_y2+18
-            image_ttf_text(@picture,@font_size,angle,(xpos).floor-(text_width/2).floor,ypos,c_text_color,@font_name,value)
+            image_ttf_text(@picture,@font_size,angle,(xpos).floor-(text_width/2).floor,ypos,c_text_color,@font_name,value.to_s)
           else
              ypos = @g_area_y2+10+$TextHeight
               if ( angle <= 90 )
-                image_ttf_text(@picture,@font_size,angle,(xpos).floor-text_width+5,ypos,c_text_color,@font_name,value)
+                image_ttf_text(@picture,@font_size,angle,(xpos).floor-text_width+5,ypos,c_text_color,@font_name,value.to_s)
               else
-                image_ttf_text(@picture,@font_size,angle,(xpos).floor+text_width+5,ypos,c_text_color,@font_name,value)
+                image_ttf_text(@picture,@font_size,angle,(xpos).floor+text_width+5,ypos,c_text_color,@font_name,value.to_s)
               end  
            end
-        ymax = ypos if (ymax < ypos || ymax.nil? )
+        ymax = ypos if (ymax.nil? ||(!ymax.nil? && ymax < ypos))
       end
       xpos = xpos + @division_width
       id = id+1
     end   #loop ended
     #Write the X Axis caption if set */
-    if ( !(data_description["axis"]["x"]).nil? )
+    if ((!data_description["axis"].nil? && !data_description["axis"]["x"].nil?) )
       position   = image_ftb_box(@font_size,90,@font_name,data_description["axis"]["x"])
-      text_width  = (position[2]).abs+(position[0]).abs
+      text_width  = (position[:lower_right][0]).abs+(position[:lower_right][0]).abs
       text_left   = ((@g_area_x2 - @g_area_x1) / 2) + @g_area_x1 + (text_width/2)
-      image_ttf_text(@picture,@font_size,0,text_left,ymax+@font_size+5,c_text_color,@font_name,data_description["axis"]["x"])
+      image_ttf_text(@picture,@font_size,0,text_left,ymax+@font_size+5,c_text_color,@font_name,data_description["axis"]["x"].to_s)
     end
   end
   #Compute and draw the scale 
@@ -845,8 +879,8 @@ class RChart
       b = 0    if ( b < 0 )
       b = 255  if ( b > 255 )
 
-     c_text_color =allocate_color(r,g,b)
-
+     #c_text_color =allocate_color(r,g,b)
+      c_text_color = GD2::Color.new(r,g,b)
      y = @g_area_y2 - (value - @vmin.to_f) * @division_ratio.to_f
 
      return(-1) if ( y <= @g_area_y1 || y >= @g_area_y2 )
@@ -863,9 +897,9 @@ class RChart
         end
         
         if ( show_on_right )
-          image_ttf_text(@picture,@font_size,0,@g_area_x2+2,y+(@font_size/2),c_text_color,@font_name,label)
+          image_ttf_text(@picture,@font_size,0,@g_area_x2+2,y+(@font_size/2),c_text_color,@font_name,label.to_s)
         else
-          image_ttf_text(@picture,@font_size,0,@g_area_x1+2,y-(@font_size/2),c_text_color,@font_name,label)
+          image_ttf_text(@picture,@font_size,0,@g_area_x1+2,y-(@font_size/2),c_text_color,@font_name,label.to_s)
         end 
      end
    end
@@ -936,7 +970,7 @@ class RChart
         
             
        @layers[graph_id] = image_create_true_color(layer_width,layer_height)
-       c_white                = self.allocate_color(255,255,255)
+       c_white                = GD2::Color.new(255,255,255)
      #  c_graph                = $this->AllocateColor(@layers[graph_id],@pallette[graph_id]["r"],@pallette[graph_id]["g"],@pallette[graph_id]["b"])
       #c_graph=self.allocate_color(@pallette[graph_id]["r"],@pallette[graph_id]["g"],@pallette[graph_id]["b"])
        image_filled_rectangle(@layers[graph_id],0,0,layer_width,layer_height,255,255,255)
@@ -995,16 +1029,16 @@ p.add_all_series
 p.set_serie_name("January","Serie1")
 p.set_serie_name("February","Serie2")
 p.set_serie_name("March","Serie3")
- ch = RChart.new(700,230)
- ch.set_graph_area(50,30,585,200)
- ch.draw_filled_rounded_rectangle(7,7,693,223,5,240,240,240)
- ch.draw_rounded_rectangle(5,5,695,225,5,230,230,230)
- ch.draw_graph_area(255,255,255,true);
+ch = RChart.new(700,230)
+ch.set_graph_area(50,30,585,200)
+ch.draw_filled_rounded_rectangle(7,7,693,223,5,240,240,240)
+ch.draw_rounded_rectangle(5,5,695,225,5,230,230,230)
+ch.draw_graph_area(255,255,255,true);
 
- #debugger
-  ch.draw_scale(p.get_data,p.get_data_description,1,150,150,150,true,0,2,true)
 
- ch.draw_treshold(0,143,55,72,true,true)
+ch.draw_scale(p.get_data,p.get_data_description,1,150,150,150,true,0,2,true)
+
+ch.draw_treshold(0,143,55,72,true,true)
 
 ch.draw_overlay_bar_graph(p.get_data,p.get_data_description)
 
